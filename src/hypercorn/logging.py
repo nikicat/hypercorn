@@ -152,7 +152,8 @@ class AccessLogAtoms(dict):
         else:
             method = "GET"
         query_string = request["query_string"].decode()
-        path_with_qs = request["path"] + ("?" + query_string if query_string else "")
+        path = request["raw_path"].decode()
+        path_with_qs = path + ("?" + query_string if query_string else "")
         status_code = response["status"]
         try:
             status_phrase = HTTPStatus(status_code).phrase
@@ -163,13 +164,13 @@ class AccessLogAtoms(dict):
                 "h": remote_addr,
                 "l": "-",
                 "t": time.strftime("[%d/%b/%Y:%H:%M:%S %z]"),
-                "r": f"{method} {request['path']} {protocol}",
+                "r": f"{method} {path} {protocol}",
                 "R": f"{method} {path_with_qs} {protocol}",
                 "s": response["status"],
                 "st": status_phrase,
                 "S": request["scheme"],
                 "m": method,
-                "U": request["path"],
+                "U": path,
                 "Uq": path_with_qs,
                 "q": query_string,
                 "H": protocol,
